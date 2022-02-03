@@ -3,9 +3,8 @@
 //   deployer.deploy(TokenFarm);
 // };
 
-
-
-
+// --NOTE
+// this file is the put new contracts to the blockchain
 
 //lve2  ________ zeit37:37
 // smart contracts in the network
@@ -13,7 +12,6 @@
   const DappToken = artifacts.require('DappToken');
   const DaiToken = artifacts.require('DaiToken');
   const TokenFarm = artifacts.require('TokenFarm');
-
 
 
 module.exports =async function(deployer, network, accounts) {
