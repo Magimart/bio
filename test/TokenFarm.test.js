@@ -1,5 +1,6 @@
 const { assert } = require('chai');
 
+// const { assert } = require('chai');
 const DappToken = artifacts.require('DappToken');
 const DaiToken = artifacts.require('DaiToken');
 const TokenFarm = artifacts.require('TokenFarm');
@@ -70,9 +71,30 @@ contract('TokenFarm', ([owner, investor]) => {
           describe('Farming tokens',async() => {
             it('rewards investors for staking mDai zeit 1:18',  async () => {
                let result;
-                    result = await daiToken.balanceOf(investor)
+                    result = await daiToken.balanceOf(investor);
                     assert.equal(result.toString(), getTokes('100'), 'checks if investors wallet balance is correct before staking')
-              })
+              
+                 //  dai toke holder approves the token, hence giving dapp token permission to to stake the dai tokens
+                   await daiToken.approve(tokenFarm.address, getTokes('100'), {from: investor});
+                   await tokenFarm.stakeTokens(getTokes('100'), {from: investor});
+
+                  // check for the investors wallet if the transfering amount exists inthe investors wallet
+                  result = await daiToken.balanceOf(investor);
+                  assert.equal(result.toString(), getTokes('0'), 'investor Dai wallet is 0 after staking')
+
+                  // check that TokenFarm has recieved 100 tokens
+                  result = await daiToken.balanceOf(tokenFarm.address)
+                  assert.equal(result.toString(), getTokes('100'), 'the Token Farm(YieldFarm) is correct after staking')
+
+                  //check if staking balcnace is correct
+                  result = await tokenFarm.stakingBalance(investor)
+                  assert.equal(result.toString(), getTokes('100'), 'the investor is staking balance')
+
+                 // check that the inveator status is staking
+                 result = await tokenFarm.isStaking(investor)
+                 assert.equal(result.toString(), 'true', 'the investor is staking')
+
+               })
             }
 
           )

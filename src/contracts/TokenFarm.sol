@@ -40,18 +40,11 @@ import "./DappToken.sol";
               //update staking status
               isStaking[msg.sender] = true;
               hasStaked[msg.sender] = true;
-
-
-
-
-
-        }
+           }
 
 
         //2. withdraw tokens
      
         //.3 issuing of tokens
-
-        
 
 }
