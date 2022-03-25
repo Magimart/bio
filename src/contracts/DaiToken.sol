@@ -1,4 +1,5 @@
-pragma solidity ^0.5.0;
+// pragma solidity ^0.5.0;
+pragma solidity >=0.5.0 <0.9.0;
 
 contract DaiToken {
     string  public name = "Mock DAI Token";
@@ -24,7 +25,6 @@ contract DaiToken {
     constructor() public {
         balanceOf[msg.sender] = totalSupply;
     }
-
 
      // this block is called when the token holders spends the token themselves
     function transfer(address _to, uint256 _value) public returns (bool success) {

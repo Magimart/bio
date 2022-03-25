@@ -1,11 +1,15 @@
-pragma solidity ^0.5.0;
+// pragma solidity ^0.5.0;
+pragma solidity >=0.5.0 <0.9.0;
+
 import "./DaiToken.sol";
 import "./DappToken.sol";
 
     contract TokenFarm {
                                             // state variable that will be be stored in the blockchaun network
         string public name = "Yield Token Farm";
+           
                                             //assign token as state vars
+        address public owner;
         DappToken public  dappToken;
         DaiToken public  daiToken;
     
@@ -15,9 +19,10 @@ import "./DappToken.sol";
          mapping(address => bool) public  isStaking;   
 
 
-        constructor( DappToken _dappToken, DaiToken _daiToken ) public {
+        constructor(DappToken _dappToken, DaiToken _daiToken ) public{
               dappToken = _dappToken;
               daiToken = _daiToken;
+              owner = msg.sender;
         }
 
 
@@ -29,10 +34,14 @@ import "./DappToken.sol";
                                             //msg is a global var and the sender is the person who innitiated the transfer
                                             // this keyword is the TokenFarm object its self to corespond with its address and the amount
 
+              // require an amount greater than zero
+              require(_amount > 0, "amount to stake must be grater than zero");
+
+            //transfer mock dai to his contractor for staking
             daiToken.transferFrom(msg.sender,  address(this),   _amount);  
 
-                                            // update sating balance  
-                     stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
+            // update staking balance  
+            stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
 
               if(!hasStaked[msg.sender]){  // add users to the array if they have staked
                         stakers.push(msg.sender);             
@@ -43,8 +52,42 @@ import "./DappToken.sol";
            }
 
 
-        //2. withdraw tokens
+            //2. withdraw tokens
+             function unstakeTokens( ) public {
+
+                     
+                     // fetch the staking balance
+                     uint balance = stakingBalance[msg.sender];
+
+                  //ensure balance is grater than zero
+                   require(balance > 0, "stating balance can not be 0" );
+
+                   // transfer tokens Dai from the app to the user
+                   daiToken.transfer(msg.sender,  balance);
+
+                   //reset there staking balance
+                   stakingBalance[msg.sender] = 0;
+                   //update staking balance so that they can not stake anymore
+                   isStaking[msg.sender] = false;
+
+                }
+
      
-        //.3 issuing of tokens
+        //.3 issuing of tokens zei 1:25
+        function issueTokens() public{
+ 
+             //make sure that only the token issuer can call this function 
+             require(msg.sender == owner, "only the  call then func");
+
+             for(uint i= 0; i < stakers.length; i++){
+                   
+               address recipient = stakers[i];
+               uint balance  = stakingBalance[recipient];
+               if(balance > 0){
+                        dappToken.transfer(recipient, balance);
+
+               }
+             }
+        }
 
 }
