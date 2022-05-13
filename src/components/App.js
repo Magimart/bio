@@ -75,7 +75,6 @@ async loadWeb3() {
 }
 
 
-
   render() {
     return (
       <div className='appWrapper'>

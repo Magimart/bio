@@ -7,6 +7,21 @@
     padding: 0;
 
 }
+
+/* header section  */
+.accountsBalanceIcon{
+    padding: .5em;
+    color: #fff;
+
+}
+.accountBalFigure{
+  font-size: small;
+  color: black;
+  background-color: darkgoldenrod;
+  padding: .2em;
+
+}
+
 .mainWrapper{
     position: relative;
     top: 2ems;
