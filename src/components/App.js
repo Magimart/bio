@@ -78,21 +78,18 @@ async loadWeb3() {
 
   render() {
     return (
-      <div>
+      <div className='appWrapper'>
         <Navbar account={this.state.account} />
-        <div className="container-fluid mt-5">
+        <div className="container-fluid">
           <div className="row">
-            <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '600px' }}>
-              <div className="content mr-auto ml-auto">
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                </a>
-
-                   <h1>Dai App</h1>
-
+            <main className="mainWrapper col-lg-12 ml-auto mr-auto">
+              <div className="contentWrapper">
+                   <h1>Yield Farm App</h1>
+              </div>
+              <div className="contentWrapper">
+                  <a href="https://art3-studio.vercel.app/magima/">
+                   <h2 className='followAppLink'>Follow this app development proccess on my Page</h2>
+                  </a>    
               </div>
             </main>
           </div>
