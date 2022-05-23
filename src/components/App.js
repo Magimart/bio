@@ -2,21 +2,34 @@ import React, { Component } from 'react'
 import Navbar from './Navbar'
 import './App.css'
 import Web3 from 'web3'
+import DaiToken from '../abis/DaiToken.json'
+import DappToken from '../abis/DappToken.json'
+import YieldFarm from '../abis/TokenFarm.json'
+
 
 
 class App extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      account: '0x0'
-    }
+        this.state = {
+          accounts: 0*0,
+          dappToken:{},
+          daiToken: {},
+          tokenFarm: {} ,
+          dappTokenBalance: "0",
+          daiTokenBalannce: "0" ,
+          stakingBalance: "0",
+          loading: true  
+        } 
   }
-
 
 
 // swap with usestate,useEffect
   async componentWillMount() {
+
+    console.log(this.state)
+
     await this.loadWeb3()
     await this.loadBlockchainData()
   }
@@ -27,52 +40,97 @@ async loadBlockchainData() {
   const web3 = window.web3
 
   const accounts = await web3.eth.getAccounts()
-  //const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
   this.setState({ account: accounts[0] })
+   console.log(accounts)
 
-  //___________logs account 1
-    console.log(accounts)
+  //___________detect network that are available on etherum
     const networkId = await web3.eth.net.getId()
     console.log(networkId)
+
+    //load deployed networks
+        const daiTokenNetwork = DaiToken.networks[networkId]
+        console.log(daiTokenNetwork)
+
+        if(daiTokenNetwork) {
+          try {
+                const daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenNetwork.address)
+
+                console.log(daiToken)
+
+                this.setState({ daiToken })
+
+                // let daiTokenBalance = await daiToken.methods.balanceOf(this.state.accounts).call()
+                let daiTokenBalance = await daiToken.methods.balanceOf(this.state.accounts)
+                this.setState({ daiTokenBalance: daiTokenBalance.toString() })
+
+                     return true;
+                
+              } catch (error) {
+                console.log(error)
+              }
+
+        } else {
+             return false;
+        }
+
+        const dappTokenNetwork = DappToken.networks[networkId]
+        if(dappTokenNetwork) {
+           try {
+                  const dappToken = new web3.eth.Contract(DappToken.abi, dappTokenNetwork.address)
+                  this.setState({ dappToken })
+                  let dappTokenBalance = await dappToken.methods.balanceOf(this.state.accounts).call()
+                  this.setState({ dappTokenBalance: dappTokenBalance.toString() })
+                return true;
+             
+           } catch (error) {
+             console.log(error)
+           }
+
+        } else {
+          return false
+ 
+         }
+
+         const YieldFarmNetwork = YieldFarm.networks[networkId]
+         if(YieldFarmNetwork) {
+             try {
+              const yieldFarm = new web3.eth.Contract(YieldFarm.abi, YieldFarmNetwork.address)
+              this.setState({ yieldFarm })
+              let stakingBalance = await yieldFarm.methods.stakingBalance(this.state.accounts).call()
+              this.setState({ stakingBalance: stakingBalance.toString() })
+              return true;
+             } catch (error) {
+               console.log(error)
+             }
+         } else {
+                 return false
+        }
+
 }
 
 
 //________________load web3 into the app
-async loadWeb3() {
-   try {
+  async loadWeb3() {
+    try {
+                if (typeof window.ethereum !== 'undefined') {
+                      window.web3 = new Web3(window.ethereum)
+                    //   window.web3 = new Web3(window.web3.currentProvider)
 
-        if (typeof window.ethereum !== 'undefined') {
-         window.web3 = new Web3(window.ethereum)
-         await window.ethereum.enable()
+                      await window.ethereum.enable()
+                      return true;
+                  }  
+                
+                  else {
+                      return false
+                  }
+    } catch (error) {
+      console.log(error)
+      
     }
-    // if (window.ethereum) {
-    //   try {
-    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //     console.log(accounts)
-    //     // setAccounts(accounts);
-    //   } catch (error) {
-    //     if (error.code === 4001) {
-    //       // User rejected request
-    //     }
-    
-    //     // setError(error);
-    //     console.log(error)
-    //   }
-     //}
-  
-  
-    else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    }
-    else {
-      window.alert('You have not yet installed Metamask on your browser, Please install to use this App')
-    }
-   } catch (error) {
-     console.log(error)
-     
-   }
-}
+  }
+
+
 
 
   render() {
@@ -83,7 +141,8 @@ async loadWeb3() {
           <div className="row">
             <main className="mainWrapper col-lg-12 ml-auto mr-auto">
               <div className="contentWrapper">
-                   <h1>Yield Farm App</h1>
+                   <h1>Yield Farm App </h1>
+                   <h5>Note: migrating this app to a new host</h5>
               </div>
               <div className="contentWrapper">
                   <a href="https://art3-studio.vercel.app/magima/">
